@@ -317,10 +317,20 @@ def main():
             # Cleanup is handled by atexit registered cleanup()
             sys.exit(0)
 
+        def on_model_change(model_id: str):
+            """Callback when user selects a different model."""
+            logger.info(f"Model change requested: {model_id}")
+            # Update config default
+            import config
+            config.DEFAULT_MODEL = model_id
+            # Reset transcriber to use new model
+            transcriber.reload_model(model_id)
+
         system_tray = SystemTray(
             on_start_recording=on_start_recording,
             on_stop_recording=on_stop_recording,
-            on_exit=on_exit
+            on_exit=on_exit,
+            on_model_change=on_model_change
         )
         logger.info("System tray initialized")
 

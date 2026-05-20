@@ -19,6 +19,8 @@
   "error_transcription": "Transcription failed",
   "error_injection": "Text injection failed, copied to clipboard",
   "model_downloading": "Downloading model...",
+  "model_loading": "Loading model...",
+  "model_ready": "Model ready",
   "help_title": "DTVoice Help",
   "help_usage": "Usage: dtvoice [options]",
   "help_option_help": "Show this help message",
@@ -37,5 +39,15 @@
   "off": "Off",
   "injection_first": "Injection first",
   "portuguese": "Portuguese",
-  "english": "English"
+  "english": "English",
+  "model": "Model",
+  "model_settings": "Transcription Model",
+  "change_model": "Change Model",
+  "current_model": "Current Model",
+  "model_size": "Size",
+  "model_language": "Language",
+  "model_wer": "Error Rate",
+  "downloaded": "Downloaded",
+  "not_downloaded": "Not Downloaded",
+  "downloading": "Downloading..."
 }

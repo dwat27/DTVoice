@@ -28,6 +28,8 @@ except ImportError:
     MenuItem = None
 
 from i18n import get_i18n
+import config
+from model_loader import get_model_loader
 
 
 logger = logging.getLogger(__name__)
@@ -63,30 +65,33 @@ class SystemTray:
         on_start_recording: Optional[Callable] = None,
         on_stop_recording: Optional[Callable] = None,
         on_open_settings: Optional[Callable] = None,
-        on_exit: Optional[Callable] = None
+        on_exit: Optional[Callable] = None,
+        on_model_change: Optional[Callable] = None
     ):
         """
         Initialize system tray.
-        
+
         Args:
             on_start_recording: Callback when "Start Recording" menu item clicked
             on_stop_recording: Callback when "Stop Recording" menu item clicked
             on_open_settings: Callback when "Settings" menu item clicked
             on_exit: Callback when "Exit" menu item clicked
+            on_model_change: Callback when user selects a different model
         """
         self._state = TrayState.IDLE
         self._is_recording = False
-        
+
         self._callbacks = {
             "start_recording": on_start_recording or (lambda: None),
             "stop_recording": on_stop_recording or (lambda: None),
             "open_settings": on_open_settings or (lambda: None),
             "exit": on_exit or (lambda: self._default_exit),
+            "model_change": on_model_change or (lambda model_id: None),
         }
-        
+
         self._icon = None  # type: ignore[assignment]
         self._icon_image: Optional[Image.Image] = None
-        
+
         if pystray is None:
             logger.error("pystray not installed. System tray will not be available.")
             return
@@ -223,12 +228,51 @@ class SystemTray:
             MenuItem(f"Português {'✓' if i18n.locale == 'pt_BR' else ''}", set_language_portuguese),
         )
 
+        # Model submenu
+        def get_model_menu_items():
+            items = []
+            current_model_id = config.DEFAULT_MODEL
+            try:
+                loader = get_model_loader(config.APP_DATA_DIR)
+                current_model_id = loader.model_id
+            except Exception:
+                pass
+
+            for model_id, model_info in config.get_all_models().items():
+                display_name = model_info["display_name"]
+                # Check if downloaded
+                try:
+                    loader = get_model_loader(config.APP_DATA_DIR)
+                    if model_id == current_model_id:
+                        display_name = f"{display_name} ✓"
+                    # Simple check - if model subdir exists
+                    model_subdir = config.MODEL_DIR / model_id.replace("/", "_")
+                    if model_subdir.exists():
+                        display_name = f"{display_name} [DL]"
+                except Exception:
+                    pass
+
+                def make_callback(mid):
+                    def cb(item):
+                        self._callbacks["model_change"](mid)
+                        self._update_menu()
+                    return cb
+
+                items.append(MenuItem(display_name, make_callback(model_id)))
+
+            return items
+
+        model_submenu = Menu(*get_model_menu_items())
+
         # Settings submenu (locked for v1 - read-only display)
         settings_menu = Menu(
             MenuItem(f"{i18n['hotkey']}: Left Ctrl + Left Win", None, enabled=False),
             MenuItem(f"{i18n['output_mode']}: {i18n['injection_first']}", None, enabled=False),
             MenuItem(f"{i18n['auto_stop']}: 60 {i18n['seconds']}", None, enabled=False),
             MenuItem(f"{i18n['notifications']}: {i18n['on']}", None, enabled=False),
+            Menu.SEPARATOR,  # type: ignore[union-attr]
+            MenuItem(f"{i18n['model']}: {config.get_model_config(config.DEFAULT_MODEL)['display_name']}", None, enabled=False),
+            MenuItem(i18n["change_model"], model_submenu),
             Menu.SEPARATOR,  # type: ignore[union-attr]
             MenuItem(i18n["language"], language_submenu),
         )

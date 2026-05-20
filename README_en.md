@@ -92,6 +92,36 @@ The app uses the `remynd/whisper-small-pt` model from Hugging Face (~466MB):
 
 > ⚠️ In version 1, settings are not user-customizable. This will be added in future versions.
 
+## 🧠 Supported AI Models
+
+DTVoice supports multiple Whisper models. The default model is optimized for Brazilian Portuguese, but you can choose other models.
+
+### Available Models
+
+| Model | Language | Size | WER | Description |
+| ----- | -------- | ---- | --- | ------------ |
+| `remynd/whisper-small-pt` | PT-BR | 466 MB | ~10% | Recommended for PT-BR |
+| `Systran/faster-whisper-small-pt` | PT-BR | 466 MB | ~8% | Faster variant for PT-BR |
+| `Systran/faster-whisper-base` | Multi | 140 MB | ~12% | Multi-language, smaller |
+| `Systran/faster-whisper-medium` | Multi | 1500 MB | ~6% | Multi-language, higher accuracy |
+| `Systran/faster-whisper-large-v3` | Multi | 3100 MB | ~4% | Multi-language, highest accuracy |
+| `openai/whisper-base` | Multi | 140 MB | ~15% | OpenAI base, multi-language |
+| `openai/whisper-small` | Multi | 466 MB | ~11% | OpenAI small, multi-language |
+
+### Changing Models
+
+In the current version, you can change the model via the tray menu:
+1. Click on the DTVoice icon in the system tray
+2. Go to **Settings** → **Change Model**
+3. Select the desired model
+
+> ⚠️ When changing models, the new model will be downloaded automatically the first time.
+
+### How It Works
+- Each model is downloaded to `%APPDATA%/dtvoice/models/{model_id}/`
+- Downloaded models work offline
+- You can have multiple models installed simultaneously
+
 ## 🔧 Technologies
 
 | Component | Technology |

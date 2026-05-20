@@ -19,6 +19,8 @@
   "error_transcription": "Transcrição falhou",
   "error_injection": "Injeção de texto falhou, copiado para área de transferência",
   "model_downloading": "Baixando modelo...",
+  "model_loading": "Carregando modelo...",
+  "model_ready": "Modelo pronto",
   "help_title": "Ajuda do DTVoice",
   "help_usage": "Uso: dtvoice [opções]",
   "help_option_help": "Mostrar esta mensagem de ajuda",
@@ -37,5 +39,15 @@
   "off": "Desativado",
   "injection_first": "Injeção primeiro",
   "portuguese": "Português",
-  "english": "Inglês"
+  "english": "Inglês",
+  "model": "Modelo",
+  "model_settings": "Modelo de Transcrição",
+  "change_model": "Trocar Modelo",
+  "current_model": "Modelo Atual",
+  "model_size": "Tamanho",
+  "model_language": "Idioma",
+  "model_wer": "Taxa de Erro",
+  "downloaded": "Baixado",
+  "not_downloaded": "Não Baixado",
+  "downloading": "Baixando..."
 }

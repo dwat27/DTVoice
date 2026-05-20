@@ -92,6 +92,36 @@ O app usa o modelo `remynd/whisper-small-pt` do Hugging Face (~466MB):
 
 > ⚠️ Na versão 1, as configurações não são customizáveis pelo usuário. Isso será adicionado em versões futuras.
 
+## 🧠 Modelos de IA Suportados
+
+O DTVoice suporta vários modelos Whisper. O modelo padrão é otimizado para Português Brasileiro, mas você pode escolher outros modelos mais tarde.
+
+### Modelos Disponíveis
+
+| Modelo | Idioma | Tamanho | WER | Descrição |
+| ------ | ------- | ------- | --- | --------- |
+| `remynd/whisper-small-pt` | PT-BR | 466 MB | ~10% | Recomendado para PT-BR |
+| `Systran/faster-whisper-small-pt` | PT-BR | 466 MB | ~8% | Variante mais rápida para PT-BR |
+| `Systran/faster-whisper-base` | Multi | 140 MB | ~12% | Multi-idioma, menor |
+| `Systran/faster-whisper-medium` | Multi | 1500 MB | ~6% | Multi-idioma, maior precisão |
+| `Systran/faster-whisper-large-v3` | Multi | 3100 MB | ~4% | Multi-idioma, máxima precisão |
+| `openai/whisper-base` | Multi | 140 MB | ~15% | OpenAI base, multi-idioma |
+| `openai/whisper-small` | Multi | 466 MB | ~11% | OpenAI small, multi-idioma |
+
+### Trocar Modelo
+
+Na versão atual, o modelo pode ser trocado pelo menu da bandeja:
+1. Clique no ícone DTVoice na bandeja
+2. Vá em **Configurações** → **Trocar Modelo**
+3. Selção o modelo desejado
+
+> ⚠️ Ao trocar de modelo, o novo modelo será baixado automaticamente na primeira vez.
+
+### Como Funciona
+- Cada modelo é baixado para `%APPDATA%/dtvoice/models/{model_id}/`
+- Modelos baixados ficam disponíveis offline
+- Você pode ter múltiplos modelos instalados simultaneamente
+
 ## 🔧 Tecnologias
 
 | Componente | Tecnologia |

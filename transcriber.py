@@ -4,12 +4,17 @@ Uses sherpa-onnx OfflineRecognizer for Whisper-based transcription.
 
 import time
 import threading
+import logging
 from typing import Optional
 
 import numpy as np
 import sherpa_onnx
 
-from config import APP_DATA_DIR
+import config
+from model_loader import get_model_loader, reset_model_loader
+
+
+logger = logging.getLogger("DTVoice")
 
 
 class TranscriptionError(Exception):
@@ -27,15 +32,14 @@ class Transcriber:
     Audio transcription using sherpa-onnx whisper pipeline.
 
     Handles audio in 16kHz mono 16-bit PCM format.
+    Uses model_loader for lazy loading and model switching.
     """
 
     SAMPLE_RATE = 16000
 
     def __init__(
         self,
-        encoder_path: Optional[str] = None,
-        decoder_path: Optional[str] = None,
-        tokens_path: Optional[str] = None,
+        model_id: Optional[str] = None,
         num_threads: int = 4,
         timeout_seconds: float = 30.0,
         max_audio_duration: float = 120.0,
@@ -46,58 +50,59 @@ class Transcriber:
         Initialize the transcriber.
 
         Args:
-            encoder_path: Path to whisper encoder ONNX model.
-                         If None, uses default path in APP_DATA_DIR.
-            decoder_path: Path to whisper decoder ONNX model.
-                         If None, uses default path in APP_DATA_DIR.
-            tokens_path: Path to tokens.txt file.
-                        If None, uses default path in APP_DATA_DIR.
+            model_id: Model ID to use (from config.WHISPER_MODELS).
+                     If None, uses config.DEFAULT_MODEL.
             num_threads: Number of threads for neural network computation.
             timeout_seconds: Maximum time to wait for transcription.
-                           30s timeout for 60s audio is typical target.
+                            30s timeout for 60s audio is typical target.
             max_audio_duration: Maximum audio duration in seconds to accept.
                               Audio longer than this will be truncated.
             max_retries: Maximum number of retry attempts for transient failures.
             initial_retry_delay: Initial delay between retries (doubles each retry).
         """
+        self._model_id = model_id or config.DEFAULT_MODEL
         self._num_threads = num_threads
         self._timeout_seconds = timeout_seconds
         self._max_audio_duration = max_audio_duration
         self._max_retries = max_retries
         self._initial_retry_delay = initial_retry_delay
 
-        # Resolve model paths
-        if encoder_path is None:
-            encoder_path = self._get_default_model_path("encoder.onnx")
-        if decoder_path is None:
-            decoder_path = self._get_default_model_path("decoder.onnx")
-        if tokens_path is None:
-            tokens_path = self._get_default_model_path("tokens.txt")
-
-        self._encoder_path = encoder_path
-        self._decoder_path = decoder_path
-        self._tokens_path = tokens_path
-
         self._recognizer: Optional[sherpa_onnx.OfflineRecognizer] = None
+        self._model_loader = None
 
-    def _get_default_model_path(self, filename: str) -> str:
-        """Get default model path in APP_DATA_DIR/models/."""
-        import os
-        return os.path.join(APP_DATA_DIR, "models", filename)
+        # Initialize model loader
+        self._init_model_loader()
+
+    def _init_model_loader(self) -> None:
+        """Initialize the model loader."""
+        self._model_loader = get_model_loader(config.APP_DATA_DIR, self._model_id)
+
+    def reload_model(self, model_id: str) -> None:
+        """
+        Reload the transcriber with a different model.
+
+        Args:
+            model_id: The model ID to switch to.
+        """
+        logger.info(f"Reloading transcriber with model: {model_id}")
+        self._model_id = model_id
+        self._unload()
+        self._init_model_loader()
+
+    def _unload(self) -> None:
+        """Unload the current model."""
+        if self._model_loader is not None:
+            self._model_loader.unload_model()
+        self._recognizer = None
 
     def _ensure_initialized(self) -> None:
-        """Lazy initialization of the recognizer."""
+        """Lazy initialization of the recognizer via model loader."""
         if self._recognizer is None:
-            self._recognizer = sherpa_onnx.OfflineRecognizer.from_whisper(
-                encoder=self._encoder_path,
-                decoder=self._decoder_path,
-                tokens=self._tokens_path,
-                num_threads=self._num_threads,
-                decoding_method="greedy_search",
-                debug=False,
-                language="",
-                task="transcribe",
-            )
+            if self._model_loader is None:
+                self._init_model_loader()
+            recognizer = self._model_loader.get_recognizer()
+            if recognizer is not None:
+                self._recognizer = recognizer
 
     def _bytes_to_float32_array(self, audio_bytes: bytes) -> np.ndarray:
         """
@@ -255,3 +260,8 @@ class Transcriber:
     def max_audio_duration(self) -> float:
         """Return maximum supported audio duration in seconds."""
         return self._max_audio_duration
+
+    @property
+    def model_id(self) -> str:
+        """Return current model ID."""
+        return self._model_id
