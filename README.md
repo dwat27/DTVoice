@@ -25,7 +25,7 @@
 
 ### Opção 1: Executável pré-compilado (Recomendado)
 
-1. Baixe o arquivo `DTVoice.exe` da pasta `dist/`
+1. Baixe o arquivo `DTVoice.exe` da página de [Releases](https://github.com/dwat27/DTVoice/releases)
 2. Execute `DTVoice.exe --startup` para adicionar ao iniciar do Windows (opcional)
 3. Execute `DTVoice.exe --minimize` para iniciar minimizado na bandeja
 
@@ -152,14 +152,42 @@ dtvoice/
 ├── config.py                # Configurações do aplicativo
 ├── requirements.txt         # Dependências Python
 ├── pyproject.toml          # Configuração do projeto
-├── dtvoice.spec            # Spec do PyInstaller
-└── dist/DTVoice.exe        # Executável compilado
+└── dtvoice.spec            # Spec do PyInstaller
 ```
 
 ## 🐛 Problemas Conhecidos
 
 - **Permissão de microfone**: Na primeira execução, o Windows pode pedir permissão para o microfone. Conceda pelo Settings > Privacy > Microphone.
 - **Instalação sem admin**: O app não requer privilégios de administrador. Se precisar de ajuda, execute como administrator uma vez para registrar o atalho global.
+
+## 🔒 Privacidade
+
+**DTVoice é 100% offline e seguro para dados.**
+
+### O que coletamos:
+- **Nada**. O aplicativo não coleta, transmite ou armazena nenhum dado pessoal em servidores externos.
+
+### Como funcionam os dados:
+| Dado | Armazenamento | Onde |
+| ---- | ------------- | ---- |
+| Histórico de transcrições | Local | `%APPDATA%/dtvoice/history.json` |
+| Configurações | Local | `%APPDATA%/dtvoice/settings.json` |
+| Modelo de IA | Local | `%APPDATA%/dtvoice/models/` |
+| Logs | Local | `%APPDATA%/dtvoice/logs/` |
+
+### Permissões necessárias:
+- **Microfone**: Para gravar áudio (apenas quando você inicia gravação)
+- **Registro do Windows**: Apenas `HKCU\...\Run` para iniciar com o sistema (opcional)
+
+### Seus direitos:
+- Todos os dados ficam no seu PC
+- Você pode apagar o histórico a qualquer momento (Configurações > Histórico > Limpar)
+- Não há telemetry, analytics ou conexão com servidores externos
+
+### Compliance:
+- ✅ **LGPD (Brasil)**: Dados 100% locais, nenhum dado pessoal enviado para fora
+- ✅ **GDPR (UE)**: Sem coleta de dados
+- ✅ **CCPA (Califórnia)**: Sem venda de dados
 
 ## 🚧 Roadmap
 

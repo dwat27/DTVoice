@@ -1,12 +1,16 @@
 """DTVoice Settings UI - Configuration window with tabs."""
 import os
 import json
+import logging
 import tkinter as tk
 from tkinter import ttk, messagebox
 from typing import Callable, Optional
 
 import config
 from i18n import get_i18n
+from history import get_history
+
+logger = logging.getLogger(__name__)
 
 
 class SettingsWindow:
@@ -55,7 +59,7 @@ class SettingsWindow:
                 with open(settings_file, "r", encoding="utf-8") as f:
                     loaded = json.load(f)
                     defaults.update(loaded)
-            except Exception:
+            except (json.JSONDecodeError, OSError, IOError):
                 pass
 
         return defaults
@@ -90,6 +94,9 @@ class SettingsWindow:
 
         # Tab 4: Model
         self._create_model_tab(notebook)
+
+        # Tab 5: History
+        self._create_history_tab(notebook)
 
         # Bottom buttons
         button_frame = ttk.Frame(self.root)
@@ -289,6 +296,113 @@ class SettingsWindow:
                 self.model_tree.selection_set(item)
                 self.model_tree.see(item)
                 break
+
+    def _create_history_tab(self, notebook):
+        """History management tab."""
+        tab = ttk.Frame(notebook, padding=10)
+        notebook.add(tab, text=self.i18n.get("settings_tab_history", "History"))
+
+        # History stats
+        stats_frame = ttk.LabelFrame(tab, text=self.i18n.get("history_stats", "Statistics"), padding=10)
+        stats_frame.pack(fill="x", pady=(0, 10))
+
+        self.history_stats_label = ttk.Label(stats_frame, text="")
+        self.history_stats_label.pack(anchor="w")
+
+        # Clear history button
+        btn_frame = ttk.Frame(tab)
+        btn_frame.pack(fill="x", pady=10)
+
+        ttk.Button(
+            btn_frame,
+            text=self.i18n.get("history_clear", "Clear History"),
+            command=self._on_clear_history,
+        ).pack(side="left")
+
+        ttk.Button(
+            btn_frame,
+            text=self.i18n.get("history_refresh", "Refresh"),
+            command=self._refresh_history_stats,
+        ).pack(side="left", padx=(5, 0))
+
+        # History list
+        list_frame = ttk.Frame(tab)
+        list_frame.pack(fill="both", expand=True)
+
+        columns = ("text", "timestamp", "chars")
+        self.history_tree = ttk.Treeview(list_frame, columns=columns, show="headings", height=10)
+
+        self.history_tree.heading("text", text=self.i18n.get("history_text", "Text"))
+        self.history_tree.heading("timestamp", text=self.i18n.get("history_timestamp", "Time"))
+        self.history_tree.heading("chars", text=self.i18n.get("history_chars", "Chars"))
+
+        self.history_tree.column("text", width=300)
+        self.history_tree.column("timestamp", width=150)
+        self.history_tree.column("chars", width=80)
+
+        scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.history_tree.yview)
+        self.history_tree.configure(yscrollcommand=scrollbar.set)
+
+        self.history_tree.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Initial load
+        self._refresh_history_stats()
+
+    def _refresh_history_stats(self):
+        """Refresh history statistics and list."""
+        try:
+            history = get_history()
+            stats = history.get_stats()
+
+            # Update stats label
+            stats_text = (
+                f"Total: {stats['total']} | "
+                f"Characters: {stats['total_chars']} | "
+                f"Words: {stats['total_words']}"
+            )
+            self.history_stats_label.config(text=stats_text)
+
+            # Clear and repopulate tree
+            for item in self.history_tree.get_children():
+                self.history_tree.delete(item)
+
+            for entry in history.get_recent(50):
+                # Truncate text for display
+                text = entry.get("text", "")[:50] + "..." if len(entry.get("text", "")) > 50 else entry.get("text", "")
+                timestamp = entry.get("timestamp", "")[:19]
+                chars = entry.get("char_count", 0)
+
+                self.history_tree.insert(
+                    "",
+                    "end",
+                    values=(text, timestamp, chars),
+                    tags=(str(entry.get("id", "")),),
+                )
+        except Exception as e:
+            logger.warning(f"Failed to refresh history stats: {e}")
+            self.history_stats_label.config(text="Error loading history")
+
+    def _on_clear_history(self):
+        """Handle clear history button click."""
+        i18n = get_i18n()
+        result = messagebox.askyesno(
+            i18n.get("history_clear_confirm_title", "Clear History"),
+            i18n.get("history_clear_confirm", "Are you sure you want to clear all history? This cannot be undone."),
+        )
+
+        if result:
+            try:
+                history = get_history()
+                history.clear()
+                self._refresh_history_stats()
+                messagebox.showinfo(
+                    i18n.get("history_cleared", "History Cleared"),
+                    i18n.get("history_cleared_msg", "All history has been cleared."),
+                )
+            except Exception as e:
+                logger.error(f"Failed to clear history: {e}")
+                messagebox.showerror("Error", f"Failed to clear history: {e}")
 
     def _load_current_settings(self):
         """Load current settings into UI."""
