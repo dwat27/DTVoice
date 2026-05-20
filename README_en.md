@@ -163,11 +163,11 @@ dtvoice/
 
 ## 🚧 Roadmap
 
-- [ ] GUI for settings
-- [ ] Language/model selection
-- [ ] Transcription history
-- [ ] Customizable hotkeys
-- [ ] Light/dark theme
+- [x] Graphical settings interface
+- [x] Language/model selection
+- [x] Transcription history
+- [x] Customizable hotkeys
+- [x] Light/dark theme
 
 ## 📄 License
 

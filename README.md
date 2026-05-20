@@ -163,11 +163,11 @@ dtvoice/
 
 ## 🚧 Roadmap
 
-- [ ] Interface gráfica para configurações
-- [ ] Seleção de idioma/modelo
-- [ ] Histórico de transcrições
-- [ ] Atalhos customizáveis
-- [ ] Tema claro/escuro
+- [x] Interface gráfica para configurações
+- [x] Seleção de idioma/modelo
+- [x] Histórico de transcrições
+- [x] Atalhos customizáveis
+- [x] Tema claro/escuro
 
 ## 📄 Licença
 
