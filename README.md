@@ -90,7 +90,7 @@ O app usa o modelo `remynd/whisper-small-pt` do Hugging Face (~466MB):
 | Auto-stop | 60 segundos |
 | Detecção de silêncio | 3 segundos |
 
-> ⚠️ Na versão 1, as configurações não são customizáveis pelo usuário. Isso será adicionado em versões futuras.
+
 
 ## 🧠 Modelos de IA Suportados
 
