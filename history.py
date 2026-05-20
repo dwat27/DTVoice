@@ -2,6 +2,7 @@
 import os
 import json
 import datetime
+import logging
 from typing import List, Optional
 
 import config
@@ -22,7 +23,7 @@ class TranscriptionHistory:
             try:
                 with open(self.history_file, "r", encoding="utf-8") as f:
                     self._history = json.load(f)
-            except Exception:
+            except (json.JSONDecodeError, OSError, IOError):
                 self._history = []
         else:
             self._history = []
@@ -33,8 +34,8 @@ class TranscriptionHistory:
         try:
             with open(self.history_file, "w", encoding="utf-8") as f:
                 json.dump(self._history, f, indent=2, ensure_ascii=False)
-        except Exception:
-            pass
+        except (OSError, IOError) as e:
+            logging.warning(f"Failed to save history: {e}")
 
     def add(self, text: str, model_id: Optional[str] = None, duration: Optional[float] = None):
         """Add a new transcription to history."""

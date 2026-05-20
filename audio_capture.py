@@ -3,6 +3,7 @@ Audio capture module for DTVoice.
 Provides audio capture with 16kHz, mono, 16-bit configuration for Whisper compatibility.
 """
 
+import logging
 import sounddevice as sd
 import numpy as np
 from collections import deque
@@ -89,7 +90,8 @@ class AudioCapture:
                 i18n = get_i18n()
                 raise MicrophoneInUseError(i18n["error_mic_in_use"])
             return False
-        except Exception:
+        except OSError as e:
+            logging.warning(f"Microphone access error: {e}")
             return False
 
     def start(self) -> None:

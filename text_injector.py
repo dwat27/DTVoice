@@ -76,7 +76,7 @@ def _send_text_via_message(hwnd, text):
         # Some controls return 0 on failure, but we treat any non-zero as success
         return result != 0
 
-    except Exception:
+    except (ctypes.ArgumentError, OSError, ValueError):
         return False
 
 
@@ -114,7 +114,7 @@ def _is_protected_window(hwnd):
 
         return False
 
-    except Exception:
+    except (ctypes.ArgumentError, OSError):
         # If we can't determine, assume protected to be safe
         return True
 
@@ -164,7 +164,7 @@ def _inject_via_clipboard(text):
 
         return True
 
-    except Exception:
+    except (ctypes.ArgumentError, OSError, MemoryError):
         return False
 
 
@@ -186,5 +186,5 @@ def _simulate_paste():
         # Release Ctrl
         user32.keybd_event(VK_CONTROL, 0, 2, 0)
 
-    except Exception:
+    except OSError:
         pass

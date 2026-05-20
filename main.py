@@ -85,7 +85,7 @@ def get_windows_version():
             'major': major,
             'is_modern': major >= 10
         }
-    except Exception:
+    except (OSError, ValueError):
         return {'version': 'unknown', 'release': 'unknown', 'major': 0, 'is_modern': False}
 
 
@@ -105,7 +105,7 @@ def is_startup_enabled():
         except FileNotFoundError:
             winreg.CloseKey(key)
             return False
-    except Exception:
+    except OSError:
         return False
 
 
@@ -131,8 +131,8 @@ def set_startup_enabled(enable):
                 pass  # Already removed
         winreg.CloseKey(key)
         return True
-    except Exception as e:
-        logging.error(f"Failed to update startup registry: {e}")
+    except (OSError, PermissionError) as e:
+        logging.warning(f"Failed to update startup registry: {e}")
         return False
 
 
@@ -145,7 +145,7 @@ def request_microphone_permission():
         # If we can query devices, we have microphone access
         logging.info("Microphone permission verified")
         return True
-    except Exception as e:
+    except OSError as e:
         logging.warning(f"Microphone permission check failed: {e}")
         # On Windows 10/11, sounddevice will fail without permission
         # The user will need to grant permission via Windows settings
@@ -178,7 +178,7 @@ def cleanup():
         if _hotkey_instance is not None:
             _hotkey_instance.stop()
             logging.info("Hotkey cleanup completed")
-    except Exception as e:
+    except RuntimeError as e:
         logging.warning(f"Hotkey cleanup error: {e}")
 
     # Close audio resources if open
@@ -188,7 +188,7 @@ def cleanup():
             if _audio_capture_instance.is_recording():
                 _audio_capture_instance.stop()
             logging.info("Audio cleanup completed")
-    except Exception as e:
+    except OSError as e:
         logging.warning(f"Audio cleanup error: {e}")
 
     # Close mutex handle
@@ -197,7 +197,7 @@ def cleanup():
             win32api.CloseHandle(_global_mutex)
             _global_mutex = None
             logging.info("Mutex cleanup completed")
-        except Exception as e:
+        except OSError as e:
             logging.warning(f"Mutex cleanup error: {e}")
 
     logging.info("DTVoice cleanup complete")

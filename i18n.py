@@ -1,5 +1,6 @@
 """Internationalization (i18n) module for DTVoice."""
 import json
+import logging
 import os
 import locale
 from typing import Optional
@@ -33,14 +34,14 @@ def get_system_locale() -> str:
 
         # Default to Portuguese for Brazilian users
         return DEFAULT_LOCALE
-    except Exception:
+    except (OSError, ValueError):
         # Fallback to locale module
         try:
             system_locale = locale.getdefaultlocale()[0]
             if system_locale and system_locale.startswith("pt"):
                 return "pt_BR"
             return "en_US"
-        except Exception:
+        except (OSError, ValueError):
             return DEFAULT_LOCALE
 
 
@@ -104,7 +105,18 @@ def get_embedded_locale(locale_name: str) -> dict:
             "off": "Off",
             "injection_first": "Injection first",
             "portuguese": "Portuguese",
-            "english": "English"
+            "english": "English",
+            "settings_tab_history": "History",
+            "history_stats": "Statistics",
+            "history_clear": "Clear History",
+            "history_refresh": "Refresh",
+            "history_text": "Text",
+            "history_timestamp": "Time",
+            "history_chars": "Chars",
+            "history_clear_confirm_title": "Clear History",
+            "history_clear_confirm": "Are you sure you want to clear all history? This cannot be undone.",
+            "history_cleared": "History Cleared",
+            "history_cleared_msg": "All history has been cleared."
         }
     elif locale_name == "pt_BR":
         return {
@@ -146,7 +158,18 @@ def get_embedded_locale(locale_name: str) -> dict:
             "off": "Desativado",
             "injection_first": "Injeção primeiro",
             "portuguese": "Português",
-            "english": "Inglês"
+            "english": "Inglês",
+            "settings_tab_history": "Histórico",
+            "history_stats": "Estatísticas",
+            "history_clear": "Limpar Histórico",
+            "history_refresh": "Atualizar",
+            "history_text": "Texto",
+            "history_timestamp": "Hora",
+            "history_chars": "Caracteres",
+            "history_clear_confirm_title": "Limpar Histórico",
+            "history_clear_confirm": "Tem certeza que deseja limpar todo o histórico? Esta ação não pode ser desfeita.",
+            "history_cleared": "Histórico Limpo",
+            "history_cleared_msg": "Todo o histórico foi limpo."
         }
     else:
         return get_embedded_locale(DEFAULT_LOCALE)
@@ -187,7 +210,7 @@ class I18n:
             pref_file = os.path.join(config_dir, ".locale")
             with open(pref_file, "w", encoding="utf-8") as f:
                 f.write(self._locale_name)
-        except Exception:
+        except OSError:
             pass
 
     @staticmethod
@@ -200,7 +223,7 @@ class I18n:
                     saved = f.read().strip()
                     if saved in SUPPORTED_LOCALES:
                         return saved
-        except Exception:
+        except OSError:
             pass
         return None
 

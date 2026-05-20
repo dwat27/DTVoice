@@ -280,7 +280,8 @@ class ModelLoader:
                             decoder=str(decoder_files[0]),
                             tokens=tokens_path,
                         )  # type: ignore[call-arg]
-                    except Exception:
+                    except (RuntimeError, OSError, ValueError) as e:
+                        logger.warning(f"Whisper loading method failed: {e}")
                         # Fall back: for some models encoder IS the full model
                         logger.info("  Loading single model (encoder=decoder)")
                         self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(

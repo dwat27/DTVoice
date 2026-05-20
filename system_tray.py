@@ -235,7 +235,7 @@ class SystemTray:
             try:
                 loader = get_model_loader(config.APP_DATA_DIR)
                 current_model_id = loader.model_id
-            except Exception:
+            except (OSError, RuntimeError):
                 pass
 
             for model_id, model_info in config.get_all_models().items():
@@ -249,7 +249,7 @@ class SystemTray:
                     model_subdir = config.MODEL_DIR / model_id.replace("/", "_")
                     if model_subdir.exists():
                         display_name = f"{display_name} [DL]"
-                except Exception:
+                except OSError:
                     pass
 
                 def make_callback(mid):
