@@ -5,6 +5,8 @@ Uses plyer for cross-platform toast notifications.
 
 from plyer import notification
 
+from i18n import get_i18n
+
 
 class PopupUI:
     """Handles popup notification display for transcription results."""
@@ -23,8 +25,10 @@ class PopupUI:
         if not message or not message.strip():
             return
 
+        i18n = get_i18n()
+
         notification = notification.Notification()
-        notification.title = f"DTVoice - {error_type}"
+        notification.title = f"{i18n['app_name']} - {error_type}"
         notification.message = message
         notification.timeout = self.DISMISS_TIMEOUT
         notification.send()
@@ -39,13 +43,15 @@ class PopupUI:
         if not text or not text.strip():
             return
 
+        i18n = get_i18n()
+
         # Truncate text if too long
         display_text = text.strip()
         if len(display_text) > self.MAX_TEXT_LENGTH:
             display_text = display_text[:self.MAX_TEXT_LENGTH - 3] + "..."
 
         notification = notification.Notification()
-        notification.title = "DTVoice Transcription"
+        notification.title = f"{i18n['app_name']} Transcription"
         notification.message = display_text
         notification.timeout = self.DISMISS_TIMEOUT
 

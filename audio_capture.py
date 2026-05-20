@@ -8,6 +8,8 @@ import numpy as np
 from collections import deque
 from typing import Optional
 
+from i18n import get_i18n
+
 
 class MicrophoneUnavailableError(Exception):
     """Raised when no microphone is detected."""
@@ -62,7 +64,8 @@ class AudioCapture:
 
         # Detect microphone availability
         if not self._check_microphone_available():
-            raise MicrophoneUnavailableError("No microphone detected or microphone unavailable")
+            i18n = get_i18n()
+            raise MicrophoneUnavailableError(i18n["error_no_mic"])
 
     def _check_microphone_available(self) -> bool:
         """Check if a microphone is available and not in use."""
@@ -83,7 +86,8 @@ class AudioCapture:
             return True
         except sd.PortAudioError as e:
             if "Device unavailable" in str(e) or "in use" in str(e).lower():
-                raise MicrophoneInUseError(f"Microphone in use by another application: {e}")
+                i18n = get_i18n()
+                raise MicrophoneInUseError(i18n["error_mic_in_use"])
             return False
         except Exception:
             return False
@@ -107,7 +111,9 @@ class AudioCapture:
             self._recording = True
         except sd.PortAudioError as e:
             if "in use" in str(e).lower():
-                raise MicrophoneInUseError(f"Microphone in use by another application: {e}")
+                i18n = get_i18n()
+                raise MicrophoneInUseError(i18n["error_mic_in_use"])
+            i18n = get_i18n()
             raise MicrophoneUnavailableError(f"Failed to start recording: {e}")
 
     def _audio_callback(self, indata: np.ndarray, frames: int, time, status: sd.CallbackFlags) -> None:

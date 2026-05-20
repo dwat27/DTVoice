@@ -25,6 +25,7 @@ import numpy as np
 from audio_capture import AudioCapture
 from transcriber import Transcriber
 from system_tray import SystemTray, TrayState
+from i18n import get_i18n
 
 
 logger = logging.getLogger(__name__)

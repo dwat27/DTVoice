@@ -9,6 +9,7 @@ import clipboard_output
 import popup_ui
 
 from config import APP_NAME
+from i18n import get_i18n
 
 logger = logging.getLogger(__name__)
 

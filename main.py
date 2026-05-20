@@ -11,6 +11,7 @@ import winreg
 import platform
 
 import config
+from i18n import init_i18n, get_i18n
 
 # Import components for integration
 from system_tray import SystemTray
@@ -209,19 +210,21 @@ def register_cleanup():
 
 def parse_args():
     """Parse command line arguments."""
+    i18n = get_i18n()
+
     if "--help" in sys.argv or "-h" in sys.argv:
-        print("DTVoice - Windows voice-to-text application")
-        print("Usage: dtvoice [options]")
+        print(f"DTVoice - {i18n['app_name']}")
+        print(i18n["help_usage"])
         print("Options:")
-        print("  --help, -h     Show this help message")
-        print("  --version      Show version information")
-        print("  --startup      Add DTVoice to Windows startup")
-        print("  --no-startup   Remove DTVoice from Windows startup")
-        print("  --minimize     Start minimized to system tray")
+        print(f"  --help, -h     {i18n['help_option_help']}")
+        print(f"  --version      {i18n['help_option_version']}")
+        print(f"  --startup      {i18n['help_option_startup']}")
+        print(f"  --no-startup   {i18n['help_option_no_startup']}")
+        print(f"  --minimize     {i18n['help_option_minimize']}")
         sys.exit(0)
 
     if "--version" in sys.argv or "-v" in sys.argv:
-        print(f"DTVoice version {__version__}")
+        print(f"{i18n['app_name']} {i18n['version']} {__version__}")
         sys.exit(0)
 
     # Handle startup registration
@@ -259,22 +262,30 @@ def main():
         if not win_info['is_modern']:
             logger.warning("Windows version may not be fully supported")
 
+        # Initialize i18n (loads saved locale or auto-detects) BEFORE parse_args
+        i18n = init_i18n()
+        logger.info(f"Language: {i18n.locale}")
+
         start_minimized = parse_args()
 
         if not check_single_instance():
-            print("DTVoice already running")
+            print(i18n["already_running"])
             logger.info("Second instance blocked by mutex")
             sys.exit(1)
 
         # Check first run and request permissions
         check_first_run()
 
+        # Initialize i18n (loads saved locale or auto-detects)
+        i18n = init_i18n()
+        logger.info(f"Language: {i18n.locale}")
+
         logger.info("DTVoice starting")
         print(f"DTVoice v{__version__} initialized")
 
         if start_minimized:
             logger.info("Starting minimized")
-            print("Started minimized to system tray")
+            print(i18n["started_minimized"])
 
         # =====================================================
         # INTEGRATION: Wire all components together
@@ -338,10 +349,10 @@ def main():
         hotkey_started = start_global_hotkey(hotkey_callback)
         if hotkey_started:
             logger.info("Global hotkey started (Left Ctrl + Left Win)")
-            print("Hotkey active: Left Ctrl + Left Win")
+            print(i18n["hotkey_active"])
         else:
             logger.error("Failed to start global hotkey")
-            print("Warning: Failed to start hotkey listener")
+            print(i18n["warning_hotkey_failed"])
 
         # Store references for cleanup (used by cleanup() function)
         global _hotkey_instance, _audio_capture_instance

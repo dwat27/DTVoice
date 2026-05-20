@@ -27,6 +27,8 @@ except ImportError:
     Menu = None
     MenuItem = None
 
+from i18n import get_i18n
+
 
 logger = logging.getLogger(__name__)
 
@@ -190,27 +192,47 @@ class SystemTray:
     
     def _build_menu(self) -> "pystray.Menu":  # type: ignore[name-defined]
         """Build the system tray context menu."""
-        
+
         if pystray is None or Menu is None or MenuItem is None:
             raise RuntimeError("pystray is not available")
-        
+
+        i18n = get_i18n()
+
         def get_recording_label():
-            return "Stop Recording" if self._is_recording else "Start Recording"
-        
+            return i18n["stop_recording"] if self._is_recording else i18n["start_recording"]
+
         def toggle_recording(item):
             if self._is_recording:
                 self._callbacks["stop_recording"]()
             else:
                 self._callbacks["start_recording"]()
-        
+
+        def change_language(locale_name: str):
+            i18n.set_locale(locale_name)
+            self._update_menu()
+
+        def set_language_english(item):
+            change_language("en_US")
+
+        def set_language_portuguese(item):
+            change_language("pt_BR")
+
+        # Language submenu
+        language_submenu = Menu(
+            MenuItem(f"English {'✓' if i18n.locale == 'en_US' else ''}", set_language_english),
+            MenuItem(f"Português {'✓' if i18n.locale == 'pt_BR' else ''}", set_language_portuguese),
+        )
+
         # Settings submenu (locked for v1 - read-only display)
         settings_menu = Menu(
-            MenuItem("Hotkey: Left Ctrl + Left Win", None, enabled=False),
-            MenuItem("Output mode: Injection First", None, enabled=False),
-            MenuItem("Auto-stop: 60s", None, enabled=False),
-            MenuItem("Notifications: On", None, enabled=False),
+            MenuItem(f"{i18n['hotkey']}: Left Ctrl + Left Win", None, enabled=False),
+            MenuItem(f"{i18n['output_mode']}: {i18n['injection_first']}", None, enabled=False),
+            MenuItem(f"{i18n['auto_stop']}: 60 {i18n['seconds']}", None, enabled=False),
+            MenuItem(f"{i18n['notifications']}: {i18n['on']}", None, enabled=False),
+            Menu.SEPARATOR,  # type: ignore[union-attr]
+            MenuItem(i18n["language"], language_submenu),
         )
-        
+
         menu = Menu(
             MenuItem(
                 get_recording_label,
@@ -218,16 +240,16 @@ class SystemTray:
             ),
             Menu.SEPARATOR,  # type: ignore[union-attr]
             MenuItem(
-                "Settings",
+                i18n["settings"],
                 settings_menu,
             ),
             Menu.SEPARATOR,  # type: ignore[union-attr]
             MenuItem(
-                "Exit",
+                i18n["exit"],
                 lambda item: self._callbacks["exit"](),
             ),
         )
-        
+
         return menu
     
     def _update_icon(self):
@@ -250,20 +272,21 @@ class SystemTray:
         if pystray is None:
             logger.error("Cannot start system tray: pystray not available")
             return
-        
+
+        i18n = get_i18n()
         logger.info("Starting system tray...")
-        
+
         # Generate initial icon
         self._icon_image = self._generate_icon_image(self._state)
-        
+
         # Create tray icon
         self._icon = pystray.Icon(
             "DTVoice",
             self._icon_image,
-            "DTVoice",
+            i18n["app_name"],
             menu=self._build_menu(),
         )
-        
+
         # Run icon (blocking)
         self._icon.run()  # type: ignore[union-attr]
     
