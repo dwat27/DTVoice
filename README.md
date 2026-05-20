@@ -1,5 +1,7 @@
 # DTVoice
 
+> ⚠️ **Este projeto é um WIP (Work In Progress)** — pode conter bugs e está em desenvolvimento ativo.
+
 **DTVoice** é um aplicativo Windows de conversão de fala em texto que usa um modelo local Whisper otimizado para Português Brasileiro. Pressione um atalho global e comece a ditar — o texto aparece onde seu cursor está.
 
 ## ✨ Funcionalidades
