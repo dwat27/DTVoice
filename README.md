@@ -33,7 +33,7 @@
 
 ```powershell
 # Clonar o repositório
-git clone https://github.com/seu-usuario/dtvoice.git
+git clone https://github.com/dwat27/DTVoice.git
 cd dtvoice
 
 # Criar ambiente virtual
