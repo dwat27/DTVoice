@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dtvoice"
+version = "0.1.0"
+description = "Windows voice-to-text application"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+dtvoice = "dtvoice.main:main"

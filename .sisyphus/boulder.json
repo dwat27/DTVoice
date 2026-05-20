@@ -1,0 +1,65 @@
+{
+  "active_plan": "C:\\Desenvolvimento\\DTVoice\\.sisyphus\\plans\\voice-to-text.md",
+  "started_at": "2026-05-19T23:39:06.420Z",
+  "session_ids": [
+    "ses_1bd7b0231ffesciB6CZh6gUh1U",
+    "ses_1bd3027dcffeA1dZtCXAmw6e8c",
+    "ses_1bd2de5dfffeaHdwIyRux54xKu",
+    "ses_1bd2de3aaffeXNbwS5kWkE8rRa"
+  ],
+  "session_origins": {
+    "ses_1bd7b0231ffesciB6CZh6gUh1U": "direct",
+    "ses_1bd3027dcffeA1dZtCXAmw6e8c": "appended",
+    "ses_1bd2de5dfffeaHdwIyRux54xKu": "appended",
+    "ses_1bd2de3aaffeXNbwS5kWkE8rRa": "appended"
+  },
+  "plan_name": "voice-to-text",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Project scaffolding + dependencies",
+      "session_id": "ses_1bd62f1b6ffeX6ujzOu3psaX9S",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-19T23:56:47.080Z"
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "System tray + window management",
+      "session_id": "ses_1bd515e56ffe0xGTPLxvqZps03",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-20T00:03:00.566Z"
+    },
+    "todo:5": {
+      "task_key": "todo:5",
+      "task_label": "5",
+      "task_title": "Whisper.cpp model loading",
+      "session_id": "ses_1bd4c3fcbffecc3eEpxeMYngaZ",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-20T00:07:18.694Z"
+    },
+    "todo:10": {
+      "task_key": "todo:10",
+      "task_label": "10",
+      "task_title": "Recording state machine",
+      "session_id": "ses_1bd48135cffe0LWNLdLQMwRsnO",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-20T00:13:11.568Z"
+    },
+    "final-wave:f1": {
+      "task_key": "final-wave:f1",
+      "task_label": "F1",
+      "task_title": "**Plan Compliance Audit** — `oracle`",
+      "session_id": "ses_1bd2de3aaffeXNbwS5kWkE8rRa",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-05-20T00:43:37.939Z"
+    }
+  }
+}

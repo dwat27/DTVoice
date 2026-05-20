@@ -1,0 +1,8 @@
+﻿DTVoice - Windows voice-to-text application
+Usage: dtvoice [options]
+Options:
+  --help, -h     Show this help message
+  --version      Show version information
+  --startup      Add DTVoice to Windows startup
+  --no-startup   Remove DTVoice from Windows startup
+  --minimize     Start minimized to system tray
