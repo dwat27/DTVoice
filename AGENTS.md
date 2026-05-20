@@ -1,7 +1,7 @@
 # PROJECT KNOWLEDGE BASE
 
 **Generated:** 2026-05-19
-**Commit:** ab05478
+**Commit:** 572b3c7
 **Branch:** main
 
 ## OVERVIEW
@@ -53,7 +53,7 @@ DTVoice/
 - **State machine**: Enum + VALID_TRANSITIONS dict, custom `InvalidStateTransitionError`
 
 ## ANTI-PATTERNS (THIS PROJECT)
-- **No `dtvoice/` package**: `pyproject.toml` entry point `dtvoice.main:main` references non-existent package
+- **pyproject.toml bug**: Entry point `dtvoice.main:main` references non-existent package
 - **Bare `except Exception:`**: 114 occurrences, some with `# noqa: BLE001`
 - **No TODO/FIXME markers**: Inline issues not documented
 - **Direct Win32 API**: `win32api`, `win32event`, `win32con` in `main.py`
